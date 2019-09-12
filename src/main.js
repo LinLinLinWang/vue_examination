@@ -1,8 +1,24 @@
 import Vue from 'vue'
 import App from './App.vue'
+import  ELEMENT  from  'element-ui'; //ui
+import 'element-ui/lib/theme-chalk/index.css';
+import './assets/css/icon.css'; //icon
+import './components/icon' ;// icon
+import vuescroll from 'vuescroll'; //滚动条
 
+import  dev from  './config/dev.js'; //引入设备相关js
 Vue.config.productionTip = false
 
+
+//取消警告
+
+Vue.config.productionTip = false;
+
+//滚动条插件
+Vue.use(vuescroll, {
+  ops: {}, // 在这里设置全局默认配置
+  name: 'vueScroll' // 在这里自定义组件名字，默认是vueScroll
+});
 new Vue({
   render: h => h(App),
 }).$mount('#app')

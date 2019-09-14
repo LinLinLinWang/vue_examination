@@ -4,7 +4,7 @@
             <div class="child-dom">
                 <div class="logindiv">
                     <div class="ms-login">
-                        <div class="ms-title">考试系统</div>
+                        <div class="ms-title">运维工作知识库</div>
                         <el-tabs
                                 type="border-card"
                                 :stretch=true
@@ -86,7 +86,7 @@
 
                                     </el-form-item>
                                     <el-form-item prop="idnumber">
-                                        <el-input v-model="registerRuleForm.idnumber" placeholder="请输入学号"
+                                        <el-input v-model="registerRuleForm.idnumber" placeholder="请输入工号"
                                                   v-on:input="getRealIdNumber"
                                                   required>
                                             <el-button slot="prepend">
@@ -94,12 +94,22 @@
                                             </el-button>
                                         </el-input>
                                     </el-form-item>
-
-                                    <el-form-item prop="userphone">
-                                        <el-input v-model="registerRuleForm.userphone"
+                                    <el-form-item prop="username">
+                                        <el-input v-model="registerRuleForm.username"
                                                   :disabled="registerRuleForm.disabled"
-                                                  placeholder="请输入手机号"
-                                                  v-on:input="getRealTimePhone"
+                                                  placeholder="请输入姓名"
+                                                  v-on:input="validateUsername"
+                                                  required>
+                                            <el-button slot="prepend">
+                                                <svg-icon icon-class="手机号"/>
+                                            </el-button>
+                                        </el-input>
+                                    </el-form-item>
+                                    <el-form-item prop="password">
+                                        <el-input v-model="registerRuleForm.password"
+                                                  :disabled="registerRuleForm.disabled"
+                                                  placeholder="请输入密码"
+                                                  v-on:input="getRealTimePassword"
                                                   required>
                                             <el-button slot="prepend">
                                                 <svg-icon icon-class="手机号"/>
@@ -107,29 +117,29 @@
                                         </el-input>
                                     </el-form-item>
 
-                                    <el-form-item prop="validatecode">
-                                        <el-row>
-                                            <el-col :span="15">
-                                                <el-input v-model="registerRuleForm.validatecode"
-                                                          placeholder="请输入验证码">
-                                                    <el-button slot="prepend">
-                                                        <svg-icon icon-class="验证码"/>
-                                                    </el-button>
-                                                </el-input>
-                                            </el-col>
-                                            <el-col :span="5">
-                                                <el-button
-                                                        type="primary"
-                                                        round
-                                                        @click="registerGetPhoneValidateCode"
-                                                        :disabled="registerChangeCodeDisabled"
-                                                        v-bind:style="{opacity:registerChangeCodeOpacity}">
-                                                    {{registerCodemsg}}
-                                                </el-button>
-                                            </el-col>
-                                        </el-row>
+<!--                                    <el-form-item prop="validatecode">-->
+<!--                                        <el-row>-->
+<!--                                            <el-col :span="15">-->
+<!--                                                <el-input v-model="registerRuleForm.validatecode"-->
+<!--                                                          placeholder="请输入验证码">-->
+<!--                                                    <el-button slot="prepend">-->
+<!--                                                        <svg-icon icon-class="验证码"/>-->
+<!--                                                    </el-button>-->
+<!--                                                </el-input>-->
+<!--                                            </el-col>-->
+<!--                                            <el-col :span="5">-->
+<!--                                                <el-button-->
+<!--                                                        type="primary"-->
+<!--                                                        round-->
+<!--                                                        @click="registerGetPhoneValidateCode"-->
+<!--                                                        :disabled="registerChangeCodeDisabled"-->
+<!--                                                        v-bind:style="{opacity:registerChangeCodeOpacity}">-->
+<!--                                                    {{registerCodemsg}}-->
+<!--                                                </el-button>-->
+<!--                                            </el-col>-->
+<!--                                        </el-row>-->
 
-                                    </el-form-item>
+<!--                                    </el-form-item>-->
                                     <div class="login-btn">
                                         <el-button type="primary" @click="submitRegisterForm('registerRuleForm')">注册
                                         </el-button>
@@ -207,6 +217,7 @@
 
                 //注册
                 registerRuleForm: {
+                    password:'',
                     username: '',
                     userphone: '',
                     validatecode: '',
@@ -221,11 +232,14 @@
                         {required: true, message: '请输入手机号', trigger: 'blur'}
                     ],
                     idnumber: [
-                        {required: true, message: '请输入学号', trigger: 'blur'}
+                        {required: true, message: '请输入工号', trigger: 'blur'}
+                    ],
+                    password: [
+                        {required: true, message: '请输入密码', trigger: 'blur'}
                     ]
                 },
 
-                promot: "请确保信息的准确性,工号与手机号绑定后不可修改",
+                promot: "请确保信息的准确性",
                 promotType: 'warning',
                 registerCodemsg: "获取验证码",
 
@@ -253,18 +267,20 @@
             },
             //获取登录验证码
             getPhoneValidateCode() {
-
+                this.$message.error('内网环境，未接入互联网');
             },
             //改变获取验证码按钮样式
             changeGetCodeButtonStyle() {
 
             },
             //验证码登录
-            submitCodeForm(formName) {
+            submitCodeForm() {
+                this.$message.error('内网环境，禁止使用互联网方式');
 
             },
             //提交登录（密码）
             submitForm(formName) {
+
 
             },
 
@@ -273,18 +289,77 @@
             validateUsername() {
 
 
-
+                this.promotType = "info";
+                let uname = this.registerRuleForm.username;
+                let reg = /^[\u4E00-\u9FA5]+$/;
+                if (!reg.test(uname)&&(uname!="")){
+                    this.promot = "用户姓名仅支持中文";
+                    this.promotType = "warning";
+                    this.registerRuleForm.username= this.registerRuleForm.username.replace( this.registerRuleForm.username,"非法字符")
+                    return false;
+                } else {
+                    this.promot = "姓名符合规范";
+                    this.promotType = "success";
+                }
+                if (uname.length > 20 || uname.length <=1) {
+                    this.promot = "用户姓名长度限制在2--20位";
+                    this.promotType = "warning";
+                    this.registerRuleForm.username = uname.substring(0, 20);
+                    return false;
+                } else {
+                    return true;
+                }
             },
 
 
-            //实时获取用户输入的手机号
-            getRealTimePhone() {
+            //实时获取用户输入的密码
+            getRealTimePassword() {
+                this.promot = "密码不超过16位，且仅为英文数字下划线";
+                this.promotType = "warning";
+                var reg=/^[0-9a-zA-Z_]{1,16}$/;
+                if(reg.test(this.registerRuleForm.password)){
+
+                    this.promot = "密码格式允许";
+                    this.promotType = "success";
+ return;
+                }
+                else{
+
+                    this.promot = "密码不超过16位，且仅为英文数字下划线";
+                    this.promotType = "warning";
+                    this.registerRuleForm.password='';
+                }
 
             },
             //实时获取用户输入的学号
             getRealIdNumber() {
-
-
+                if(this.registerRuleForm.idnumber.length<6){
+                    var reg=/[0-9]+$/;
+                    if(!reg.test(this.registerRuleForm.idnumber))//不支持
+                    {
+                        this.promot = "工号仅能为六位数字，您输入的有误";
+                        this.promotType = "warning";
+                        this.registerRuleForm.idnumber='';
+                    }
+                    return;
+                }
+               if(this.registerRuleForm.idnumber.length==6){
+                   var reg_=/[0-9]{6}/;
+                   if(!reg_.test(this.registerRuleForm.idnumber))//不支持
+                   {
+                       this.promot = "工号仅能为六位数字，您输入的有误";
+                       this.promotType = "warning";
+                       this.registerRuleForm.idnumber='';
+                   }
+                   return;
+               }
+                this.promot = "工号为六位数字";
+                this.promotType = "warning";
+                if(this.registerRuleForm.idnumber.length>6){
+                    this.promot = "工号为六位数字,禁止继续录入";
+                    this.promotType = "warning";
+                    this.registerRuleForm.idnumber=  this.registerRuleForm.idnumber.substring(0,6);
+                }
             },
 
             //获取注册验证码
@@ -292,7 +367,10 @@
 
             },
             //提交注册
-            submitRegisterForm(formName) {
+            submitRegisterForm() {
+               if(this.registerRuleForm.idnumber.length<6||this.registerRuleForm.username.length<2){
+                   this.$message.error('请仔细检查各项信息');
+               }
 
             },
             //改变获取验证码按钮样式

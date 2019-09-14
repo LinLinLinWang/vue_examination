@@ -1,7 +1,7 @@
 <template>
     <div>
     <div id="footer_">
-        Copyright © 王林Grimm
+        Copyright © 信心管理部运行维护中心青岛信息室
         <br>
         鲁ICP备XXXXXXXXXX号
     </div>

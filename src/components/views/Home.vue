@@ -1,0 +1,54 @@
+<template>
+    <div class="wrapper">
+        <v-head></v-head>
+        <v-sidebar class="vhead"></v-sidebar>
+        <div class="content-box" :class="{'content-collapse':collapse}">
+            <v-tags></v-tags>
+            <div class="content">
+                <transition name="move" mode="out-in">
+                    <keep-alive :include="tagsList">
+                        <router-view></router-view>
+                    </keep-alive>
+                </transition>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    import vHead from '../common/Header.vue';
+    import vSidebar from '../common/Sidebar';
+    import vTags from '../common/Tags.vue';
+    import bus from '../common/bus';
+
+    export default {
+        data() {
+            return {
+                tagsList: [],
+                collapse: false
+            }
+        },
+        components: {
+            vHead, vSidebar, vTags
+        },
+        created() {
+            bus.$on('collapse', msg => {
+                this.collapse = msg;
+            });
+
+            //只有在标签页列表里的页面才使用keep-alive，排除需要刷新数据的页面
+            bus.$on('tags', msg => {
+                let arr = [];
+                for (let i = 0, len = msg.length; i < len; i++) {
+                    msg[i].name && arr.push(msg[i].name);
+                }
+                this.tagsList = arr;
+            })
+        }
+    }
+</script>
+<style scoped>
+    .vhead {
+        height: 100%;
+    }
+</style>

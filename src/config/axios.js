@@ -1,11 +1,20 @@
 import axios from 'axios'
+import store from './store/store'
 
 // 配置默认的host,假如你的API host是：http://api.htmlx.club
-axios.defaults.baseURL = 'http://localhost:8080'
-
-// 添加请求拦截器
+axios.defaults.baseURL = 'http://localhost:8888/knowledgebase'
+//改为表单提交
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'; //改为表单提交
+axios.defaults.transformRequest = [function (data) {
+    let ret = ''
+    for (let it in data) {
+        ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+    }
+    return ret
+}]// 添加请求拦截器
 axios.interceptors.request.use(function (config) {
   console.log("添加请求拦截器");
+   console.log("本地token"+store.state.token);
     return config
 }, function (error) {
     console.log("请求错误");
@@ -17,6 +26,9 @@ axios.interceptors.request.use(function (config) {
 axios.interceptors.response.use(function (response) {
     // 对响应数据做点什么
     console.log("添加响应拦截器");
+    store.commit('set_token', response.data.token)
+
+    console.log("本地token改为"+localStorage.getItem("token"));
     return response
 }, function (error) {
     // 对响应错误做点什么

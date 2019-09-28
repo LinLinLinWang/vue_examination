@@ -51,7 +51,7 @@
                                 <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px"
                                          class="ms-content">
                                     <el-form-item prop="phone">
-                                        <el-input v-model="ruleForm.phone" placeholder="请输入工号">
+                                        <el-input v-model="ruleForm.idnumber" placeholder="请输入工号">
                                             <el-button slot="prepend">
                                                 <svg-icon icon-class="people"/>
                                             </el-button>
@@ -186,12 +186,12 @@
                 msg: '',
                 //密码登录
                 ruleForm: {
-                    phone: '',
+                    idnumber: '',
                     password: ''
                 },
                 rules: {
                     phone: [
-                        {required: true, message: '请输入手机号', trigger: 'blur'}
+                        {required: true, message: '请输入工号', trigger: 'blur'}
                     ],
                     password: [
                         {required: true, message: '请输入密码', trigger: 'blur'}
@@ -279,8 +279,34 @@
 
             },
             //提交登录（密码）
-            submitForm(formName) {
+            submitForm() {
+                this.$axios({
+                    method: 'POST',
+                    url: '/user/loginByPassword',
 
+                    data: {
+                        idnumber : this.ruleForm.idnumber,
+                        password:this.ruleForm.password
+
+                    }
+                }).then(response => {
+
+                    var resdata = response.data;
+
+                    console.log(resdata)
+                     if(resdata.isExist=="yes"){
+                         if(resdata.isThisGuy=="yes"){
+                             alert("成功登陆");
+
+                         }else{
+                             alert("密码错误");
+                         }
+                     }else{
+                         this.$message.error('该工号尚未注册');
+                     }
+
+
+                })
 
             },
 
@@ -344,14 +370,43 @@
                     return;
                 }
                if(this.registerRuleForm.idnumber.length==6){
+                   let that=this;
                    var reg_=/[0-9]{6}/;
                    if(!reg_.test(this.registerRuleForm.idnumber))//不支持
                    {
                        this.promot = "工号仅能为六位数字，您输入的有误";
                        this.promotType = "warning";
                        this.registerRuleForm.idnumber='';
+                       return;
+                   }else{
+
+                       this.$axios({
+                           method: 'POST',
+                           url: '/user/IdnumberIsOrNotExist',
+
+                           data: {
+                               idnumber : that.registerRuleForm.idnumber
+
+                           }
+                       }).then(response => {
+
+                           var resdata = response.data;
+
+                           if (resdata.isExist === "yes") {
+                               this.$message.error('该工号已被注册');
+                               this.registerRuleForm.idnumber="";
+
+                           } else {
+                               this.$message.success('该工号可以注册');
+                           }
+                       })
+
+
                    }
-                   return;
+
+
+
+
                }
                 this.promot = "工号为六位数字";
                 this.promotType = "warning";
@@ -370,7 +425,25 @@
             submitRegisterForm() {
                if(this.registerRuleForm.idnumber.length<6||this.registerRuleForm.username.length<2){
                    this.$message.error('请仔细检查各项信息');
+                   return;
                }
+               this.$axios({
+                    method: 'POST',
+                    url: '/user/registe',
+                    data: {
+                        idnumber: this.registerRuleForm.idnumber,
+                        password: this.registerRuleForm.password,
+                        uname:this.registerRuleForm.username
+                    }
+                }).then(response => {
+                    var resdata = response.data;
+                    if(resdata.saveuser=="yes"){
+                 console.log("注册成功");
+                    }else{
+                        console.log("失败");
+                    }
+
+                })
 
             },
             //改变获取验证码按钮样式

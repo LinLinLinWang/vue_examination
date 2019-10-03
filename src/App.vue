@@ -1,22 +1,13 @@
 <template>
   <div id="app">
+    <router-view>
 
-    <Login />
+    </router-view>
   </div>
 </template>
 
-<script>
-import Login from './components/views/both/Login.vue'
-
-export default {
-  name: 'app',
-  components: {
-    Login
-  }
-}
-</script>
-
 <style>
   @import "./assets/css/main.css";
+  @import "./assets/css/color-dark.css";     /*深色主题*/
 
 </style>

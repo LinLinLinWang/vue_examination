@@ -4,7 +4,7 @@
         <div class="collapse-btn" @click="collapseChage">
             <i class="el-icon-menu"></i>
         </div>
-        <div class="logo hidden-md-and-down">有倾向性的可信点名系统</div>
+        <div class="logo hidden-md-and-down">青岛信息室工作对接系统</div>
         <div class="header-right">
             <div class="header-user-con">
                 <!-- 全屏显示 -->
@@ -44,7 +44,7 @@
 </template>
 <script>
     import bus from '../common/bus';
-    import * as types from '../../config/types'
+
     import Avatar from 'vue-avatar'
 
     export default {
@@ -55,6 +55,7 @@
                 user: null,
                 message: 0,
                 notify: 0,
+                msgnum:null
             }
         },
         computed: {
@@ -66,12 +67,18 @@
         created() {
             this.getUnReadNum();
         },
+        beforeDestroy() {    //页面关闭时清除定时器关闭
+
+            clearInterval(this.msgnum);
+            console.log("页面定时器关闭");
+        },
+
         components: {
             Avatar
         },
         methods: {
             getUnReadNum() {
-                var msgnum;
+
                 if (this.$store.state.user == null) {
                     clearTimeout(msgnum);
                     return;
@@ -99,15 +106,15 @@
                         }
                     });
 
-                    msgnum = setTimeout(() => {
-                        this.getUnReadNum();
-                    }, 6000);
+                   // this.msgnum = setTimeout(() => {
+                   //      this.getUnReadNum();
+                   //  }, 6000);
                 }
             },
             //退出操作
             handleCommand(command) {
                 if (command === 'loginout') {
-                    this.$store.commit(types.LOGOUT);
+                   this.$store.commit("logout");
                     this.$router.push('/login');
                 }
                 if (command === 'backindex') {

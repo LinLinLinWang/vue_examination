@@ -1,8 +1,12 @@
+import Vue from 'vue'
+
+
+
 import Router from 'vue-router';
 import Layout from '../../components/views/Home.vue'
 import normaluserRouter from './normaluser'
 import managerRouter from "./manager";
-
+Vue.use(Router)
 export const constantRouterMap = [
    {
         path: '/login',
@@ -20,6 +24,12 @@ export const constantRouterMap = [
                 component: resolve => require(['../../components/views/both/Dashboard.vue'], resolve),
                 hidden: true,
                 meta: {title: 'dashboard'},
+            },
+            {
+                path: '/workExperiences',
+                component: resolve => require(['../../components/views/both/WorkExperiences.vue'], resolve),
+
+                meta: {title: '知识库', icon: 'dashboard'},
             },
 
         ]

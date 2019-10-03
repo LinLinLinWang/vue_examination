@@ -173,6 +173,11 @@
         name: '',
         data() {
             return {
+
+
+                //定时器
+                timer: '',
+                num:3,//定时器时间
                 /*滚动条设置*/
                 ops: {
                     vuescroll: {
@@ -254,7 +259,7 @@
 
         },
         created() {
-            this.CheckUserTypeEnv();
+          //  this.CheckUserTypeEnv();
         },
         mounted() {
             // eslint-disable-next-line no-console
@@ -263,6 +268,7 @@
         methods: {
             //判断登录类型
             CheckUserTypeEnv() {
+              //  console.log(this.$store.state.token);
 
             },
             //获取登录验证码
@@ -296,7 +302,13 @@
                     console.log(resdata)
                      if(resdata.isExist=="yes"){
                          if(resdata.isThisGuy=="yes"){
-                             alert("成功登陆");
+                             //设置token以及
+                             var jsonuser = eval('(' + resdata.user + ')');
+                             this.$store.commit("login", {token: resdata.token, user: jsonuser});
+                             let redirect = decodeURIComponent(this.$route.query.redirect || '/');
+                             this.$router.push({
+                                 path: redirect
+                             });
 
                          }else{
                              alert("密码错误");
@@ -313,8 +325,6 @@
             //注册部分
             //检测名字
             validateUsername() {
-
-
                 this.promotType = "info";
                 let uname = this.registerRuleForm.username;
                 let reg = /^[\u4E00-\u9FA5]+$/;
@@ -423,6 +433,7 @@
             },
             //提交注册
             submitRegisterForm() {
+                let that=this;
                if(this.registerRuleForm.idnumber.length<6||this.registerRuleForm.username.length<2){
                    this.$message.error('请仔细检查各项信息');
                    return;
@@ -438,9 +449,31 @@
                 }).then(response => {
                     var resdata = response.data;
                     if(resdata.saveuser=="yes"){
-                 console.log("注册成功");
+
+
+
+
+                        //计时二秒
+                        that.timer = setInterval(function () {
+
+
+                            if(that.num!=0){
+                                that.$message.success('注册成功，'+that.num+"秒后跳转");
+                                that.num--;
+
+                            }else{
+                                clearInterval(that.timer);
+                                that.$router.push({name:'/login',query:""});
+                                that.num=3;
+                            }
+
+
+
+                        }, 1000);
+
+
                     }else{
-                        console.log("失败");
+                        this.$message.error('注册失败，请仔细检查各项信息');
                     }
 
                 })

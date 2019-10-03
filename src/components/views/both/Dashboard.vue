@@ -11,14 +11,19 @@
             return {}
         },
         created() {
-          //  this.checkuser();
+this.checkuser();
         },
         methods: {
             checkuser() {
+                alert(this.$store.state.user);
+
+                alert(this.$store.state.token);
                 if (this.$store.state.user.type === 1) {
-                    this.$router.push({path: '/teacherDashboard'});
+                    console.log("将要跳转管理员界面"+this.$store.state.user.type)
+                    this.$router.push({path: '/manager'});
                 } else {
-                    this.$router.push({path: '/dashboardStudent'});
+                    console.log("将要跳转普通用户界面"+this.$store.state.user.type)
+                    this.$router.push({path: '/normalUserDashboard'});
                 }
             }
         }

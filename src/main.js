@@ -1,10 +1,11 @@
 import Vue from 'vue'
 import App from './App.vue'
-
+//权限验证
+import './config/permission'; //权限验证
 import store from './config/store/store'; //状态管理
 import axios from './config/axios'; //网络请求
 import router from './config/router'; //路由
-Vue.prototype.$axios = axios
+Vue.prototype.$axios = axios;
 import  ELEMENT  from  'element-ui'; //ui
 import 'element-ui/lib/theme-chalk/index.css';
 import './assets/css/icon.css'; //icon
@@ -26,8 +27,9 @@ Vue.use(vuescroll, {
   name: 'vueScroll' // 在这里自定义组件名字，默认是vueScroll
 });
 new Vue({
+  store,
   router,
   axios,
- store,
+
   render: h => h(App)
 }).$mount('#app')

@@ -3,12 +3,12 @@ const normaluserRouter = {
     path: '/normaluser',
     component: Layout,
     meta: {
-        roles: ['1']
+        roles: ['0']
     },
     children: [
 
         {
-            path: '/dashboardStudent',
+            path: '/normalUserDashboard',
             meta: {
                 title: '系统首页',
                 icon: 'dashboard',
